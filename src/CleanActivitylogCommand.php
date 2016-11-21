@@ -30,7 +30,9 @@ class CleanActivitylogCommand extends Command
 
         $cutOffDate = Carbon::now()->subDays($maxAgeInDays)->format('Y-m-d H:i:s');
 
-        $amountDeleted = ActivitylogServiceProvider::getActivityModelClass()->where('created_at', '<', $cutOffDate)->delete();
+        $activityModelClass = '\\' . ActivitylogServiceProvider::getActivityModelClass();
+        $activity = new $activityModelClass;
+        $amountDeleted = $activity->where('created_at', '<', $cutOffDate)->delete();
 
         $this->info("Deleted {$amountDeleted} record(s) from the activity log.");
 
