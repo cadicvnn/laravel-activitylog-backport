@@ -17,7 +17,7 @@ trait LogsActivity
     {
         static::eventsToBeRecorded()->each(function ($eventName) {
             return static::$eventName(function (Model $model) use ($eventName) {
-                if ($eventName != 'deleted' && (!count(array_except($model->getDirty(), $model->attributesToBeIgnored())))) {
+                if (! $model->shouldLogEvent($eventName)) {
                     return;
                 }
 
@@ -43,7 +43,7 @@ trait LogsActivity
      */
     public function activity()
     {
-        return $this->morphMany(ActivitylogServiceProvider::getActivityModelClass(), 'subject');
+        return $this->morphMany(ActivitylogServiceProvider::determineActivityModel(), 'subject');
     }
 
     /**
@@ -75,11 +75,17 @@ trait LogsActivity
             return collect(static::$recordEvents);
         }
 
-        return collect([
+        $events = collect([
             'created',
             'updated',
             'deleted',
         ]);
+
+        if (collect(class_uses(__CLASS__))->contains(\Illuminate\Database\Eloquent\SoftDeletes::class)) {
+            $events->push('restored');
+        }
+
+        return $events;
     }
 
     /**
@@ -92,5 +98,21 @@ trait LogsActivity
         }
 
         return static::$ignoreChangedAttributes;
+    }
+
+    protected function shouldLogEvent(string $eventName): bool
+    {
+        if (! in_array($eventName, ['created', 'updated'])) {
+            return true;
+        }
+
+        if (array_has($this->getDirty(), 'deleted_at')) {
+            if ($this->getDirty()['deleted_at'] === null) {
+                return false;
+            }
+        }
+
+        //do not log update event if only ignored attributes are changed
+        return (bool) count(array_except($this->getDirty(), $this->attributesToBeIgnored()));
     }
 }

@@ -13,7 +13,7 @@ trait CausesActivity
      */
     public function activity()
     {
-        return $this->morphMany(ActivitylogServiceProvider::getActivityModelClass(), 'causer');
+        return $this->morphMany(ActivitylogServiceProvider::determineActivityModel(), 'causer');
     }
 
     /**

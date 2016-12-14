@@ -4,6 +4,7 @@ namespace Spatie\Activitylog\Models;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Collection;
 
@@ -71,5 +72,35 @@ class Activity extends Eloquent
         }
 
         return $query->whereIn('log_name', $logNames);
+    }
+
+    /**
+     * Scope a query to only include activities by a given causer.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Model $causer
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeCausedBy(Builder $query, Model $causer)
+    {
+        return $query
+            ->where('causer_type', get_class($causer))
+            ->where('causer_id', $causer->getKey());
+    }
+
+    /**
+     * Scope a query to only include activities for a given subject.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Model $subject
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeForSubject(Builder $query, Model $subject)
+    {
+        return $query
+            ->where('subject_type', get_class($subject))
+            ->where('subject_id', $subject->getKey());
     }
 }
