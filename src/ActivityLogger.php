@@ -206,5 +206,4 @@ class ActivityLogger
             return array_get($attributeValue, $propertyName, $match);
         }, $description);
     }
-
 }

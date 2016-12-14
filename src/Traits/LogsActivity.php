@@ -100,7 +100,7 @@ trait LogsActivity
         return static::$ignoreChangedAttributes;
     }
 
-    protected function shouldLogEvent(string $eventName): bool
+    protected function shouldLogEvent($eventName)
     {
         if (! in_array($eventName, ['created', 'updated'])) {
             return true;
