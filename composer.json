@@ -1,7 +1,7 @@
 {
-    "name": "linearsoft/laravel-activitylog-backport",
+    "name": "cadicvnn/laravel-activitylog-backport",
     "description": "A backport of Spatie's Laravel-ActivityLog to PHP 5.6",
-    "homepage": "https://github.com/LinearSoft/laravel-activitylog-backport",
+    "homepage": "https://github.com/cadicvnn/laravel-activitylog-backport",
     "license": "GPLv3",
     "keywords":
     [
